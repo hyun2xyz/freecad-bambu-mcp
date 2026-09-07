@@ -135,7 +135,8 @@ class Workflow:
         return self.printer_factory(self.config.transport_config(alias))
 
     def capabilities(self):
-        return {"version": "0.1.0", "freecad_rpc": "localhost", "trusted_python": self.config.settings.allow_freecad_python,
+        return {"version": "0.1.0", "workspace": str(self.config.workspace),
+                "freecad_rpc": "localhost", "trusted_python": self.config.settings.allow_freecad_python,
                 "slicer": find_slicer(self.config.settings.slicer_path),
                 "printers": {k: {"model": v.model, "nozzle_mm": v.nozzle_mm, "bed": v.bed}
                              for k, v in self.config.settings.printers.items()},

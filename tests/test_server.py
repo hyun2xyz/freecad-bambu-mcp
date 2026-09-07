@@ -25,6 +25,7 @@ def test_real_mcp_stdio_roundtrip_and_execution_annotations(tmp_path):
                 result = await session.call_tool("capabilities", {})
                 assert not result.isError
                 data = json.loads(result.content[0].text)
+                assert data["workspace"] == str(tmp_path.resolve())
                 assert data["trusted_python"] is False
                 assert data["printers"] == {}
                 result = await session.call_tool("start_print", {"job_id": "0" * 20, "sha256": "0" * 64})
