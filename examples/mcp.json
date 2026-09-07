@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "freecad-bambu": {
+      "command": "/absolute/path/to/freecad-bambu-mcp/.venv/bin/freecad-bambu-mcp",
+      "args": ["--config", "/absolute/path/to/freecad-bambu-mcp/config.local.json", "serve"]
+    }
+  }
+}

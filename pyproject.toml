@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "freecad-bambu-mcp"
+version = "0.1.0"
+description = "A compact, resumable FreeCAD to Bambu Studio to LAN print MCP pipeline"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "freecad-bambu-mcp contributors"}]
+dependencies = ["mcp>=1.13,<2", "pydantic>=2.11,<3", "paho-mqtt>=2.1,<3", "filelock>=3.18,<4"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "build>=1,<2"]
+
+[project.scripts]
+freecad-bambu-mcp = "freecad_bambu_mcp.cli:main"
+
+[project.urls]
+Repository = "https://github.com/hyun2xyz/freecad-bambu-mcp"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/freecad_bambu_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/docs", "/examples", "/skills", "/README.md", "/README.ko.md", "/LICENSE", "/THIRD_PARTY.md", "/pyproject.toml", "/uv.lock"]

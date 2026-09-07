@@ -1,0 +1,23 @@
+{
+  "name": "hole-plate",
+  "printer": "main",
+  "hardware": {
+    "model": "a1",
+    "nozzle_mm": 0.4,
+    "bed": "textured_plate",
+    "filaments": ["PLA"]
+  },
+  "cad": {
+    "script": "examples/plate.py",
+    "document": "PipelinePlate",
+    "objects": ["PlateWithHole"]
+  },
+  "slicing": {"mode": "gui"},
+  "print_options": {
+    "use_ams": false,
+    "bed_leveling": true,
+    "flow_calibration": true,
+    "vibration_calibration": true,
+    "timelapse": false
+  }
+}

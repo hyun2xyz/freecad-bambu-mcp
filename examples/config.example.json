@@ -1,0 +1,19 @@
+{
+  "workspace": "..",
+  "allow_freecad_python": true,
+  "freecad_port": 9875,
+  "slicer_path": null,
+  "printers": {
+    "main": {
+      "model": "a1",
+      "nozzle_mm": 0.4,
+      "bed": "textured_plate",
+      "filaments": ["PLA"],
+      "host_env": "BAMBU_HOST",
+      "serial_env": "BAMBU_SERIAL",
+      "access_code_env": "BAMBU_ACCESS_CODE",
+      "allow_self_signed": false,
+      "timeout": 15
+    }
+  }
+}
