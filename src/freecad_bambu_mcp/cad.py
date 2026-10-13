@@ -115,13 +115,20 @@ _solid_count = 0
 _bounds = [float("inf"), float("inf"), float("inf"), float("-inf"), float("-inf"), float("-inf")]
 for _name in _names:
     _o = _doc.getObject(_name)
-    if _o is None or not hasattr(_o, "Shape") or _o.Shape.isNull() or not _o.Shape.isValid() or not _o.Shape.Solids or _o.Shape.Volume <= 0:
+    _shape = getattr(_o, "Shape", None) if _o is not None else None
+    if _shape is None or _shape.isNull() or not _shape.isValid():
+        raise ValueError("invalid or non-solid shape: " + str(_name))
+    _solids = _shape.Solids
+    _volume = float(_shape.Volume)
+    if not _solids or _volume <= 0:
         raise ValueError("invalid or non-solid shape: " + str(_name))
     _items.append(_o)
-    _vol += float(_o.Shape.Volume)
-    _solid_count += len(_o.Shape.Solids)
-    _b = _o.Shape.BoundBox
+    _vol += _volume
+    _solid_count += len(_solids)
+    _b = _shape.BoundBox
     _bounds = [min(_bounds[0], _b.XMin), min(_bounds[1], _b.YMin), min(_bounds[2], _b.ZMin), max(_bounds[3], _b.XMax), max(_bounds[4], _b.YMax), max(_bounds[5], _b.ZMax)]
+if not all(__import__('math').isfinite(float(_x)) for _x in _bounds) or not __import__('math').isfinite(_vol) or _vol <= 0 or _solid_count <= 0:
+    raise ValueError("invalid export measurements")
 _model = {str(paths['model'])!r}
 for _p in ({str(paths['model'])!r}, {str(paths['stl'])!r}, {str(paths['step'])!r}):
     import os
@@ -132,8 +139,6 @@ else:
     raise RuntimeError("FreeCAD does not provide saveCopy; refusing to mutate source")
 Mesh.export(_items, {str(paths['stl'])!r})
 Part.export(_items, {str(paths['step'])!r})
-if not all(__import__('math').isfinite(float(_x)) for _x in _bounds) or not __import__('math').isfinite(_vol) or _vol <= 0 or _solid_count <= 0:
-    raise ValueError("invalid export measurements")
 print("__MCP_EXPORT__" + json.dumps({{"bounds": _bounds, "volume": _vol, "solid_count": _solid_count}}))
 '''
         try:
@@ -151,14 +156,18 @@ print("__MCP_EXPORT__" + json.dumps({{"bounds": _bounds, "volume": _vol, "solid_
             if not isinstance(evidence, dict) or not isinstance(bounds, list) or len(bounds) != 6:
                 return _failure("malformed export evidence")
             import math
-            if not all(isinstance(x, (int, float)) and math.isfinite(x) for x in bounds) or not isinstance(evidence.get("volume"), (int, float)) or not math.isfinite(evidence["volume"]) or evidence["volume"] <= 0 or evidence.get("solid_count", 0) <= 0:
+            volume = evidence.get("volume")
+            solid_count = evidence.get("solid_count")
+            if (not all(type(x) in (int, float) and math.isfinite(x) for x in bounds)
+                    or type(volume) not in (int, float) or not math.isfinite(volume) or volume <= 0
+                    or type(solid_count) is not int or solid_count <= 0):
                 return _failure("invalid export measurements")
             for p in paths.values():
                 if not p.is_file() or p.stat().st_size == 0:
                     return _failure("export did not produce non-empty files")
             exported = {k: str(v) for k, v in paths.items()}
             exported["fcstd"] = exported["model"]
-            return {"success": True, "paths": exported, "bounds_mm": evidence["bounds"], "volume_mm3": evidence.get("volume")}
+            return {"success": True, "paths": exported, "bounds_mm": bounds, "volume_mm3": volume, "solid_count": solid_count}
         except Exception as exc:
             return _failure(exc)
 

@@ -9,7 +9,7 @@ Portable Python 3.11+ MCP and CLI for a reviewable FreeCAD-to-Bambu workflow. It
 - Native single-plate dispatch for A1, A1 mini, P1P/P1S, X1C/X1E profiles. AMS mapping, fresh status, pause, resume, and stop are explicit workflow operations.
 - Experimental LAN MQTT/FTPS transport. H2, cloud, FEM and proprietary client-certificate extraction are outside this release.
 
-FreeCAD 1.1.3 CAD export and Bambu Studio 2.8.2 GUI slicing/preflight were exercised with the bundled sample on macOS. The LAN transport has offline tests; **no physical print has been verified**. See [verification](docs/verification.md) for exact limits.
+FreeCAD 1.1.3 CAD export and Bambu Studio 2.8.2 GUI slicing/preflight were exercised on macOS. On 2026-10-13, one raised-text card reached matching-job completion on an A1 through **official Bambu Studio LAN printing**. The package's experimental MQTT/FTPS dispatch still has offline-only evidence. Fine lettering and physical strength remain unverified; see [verification](docs/verification.md) for exact limits.
 
 ## Install
 
@@ -53,3 +53,9 @@ uv run pytest
 ```
 
 The tests are offline and do not prove hardware or physical-print behavior. See [docs/setup.md](docs/setup.md), [docs/research.md](docs/research.md), and [THIRD_PARTY.md](THIRD_PARTY.md).
+
+## Raised-text card example
+
+[The 90 × 50 mm card](examples/raised-card/README.md) retains editable text, a folder sketch, and a rounded base in FreeCAD. Every relief intersects the 1.8 mm base by 0.1 mm before fusion; the text projects 0.8 mm above it. The example includes unmodified Roboto fonts with their Apache-2.0 license, a local wrapper for MCP execution, and the recorded design and print checks. It does not dispatch a print.
+
+![Raised-text business card CAD preview](docs/images/raised-card.png)

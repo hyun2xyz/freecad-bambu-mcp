@@ -10,6 +10,7 @@ build/
 !.env.example
 config.local.json
 *.local.json
+*.local.py
 .freecad-bambu/
 backends/
 *.FCStd

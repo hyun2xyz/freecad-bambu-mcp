@@ -7,5 +7,6 @@ This project is MIT licensed; see [LICENSE](LICENSE). `uv.lock` is the dependenc
 - [filelock](https://github.com/tox-dev/filelock), installed 3.32.5 metadata: MIT. Used for cross-process workflow locks.
 - [pydantic](https://github.com/pydantic/pydantic), MIT. Used by configuration and job models.
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk), MIT. Used for stdio server integration.
+- [googlefonts/roboto-2](https://github.com/googlefonts/roboto-2), Apache-2.0. The raised-card example includes unmodified `src/hinted/Roboto-Bold.ttf` and `Roboto-Black.ttf`; the original license and font-file attribution remain in [examples/raised-card/fonts](examples/raised-card/fonts). These assets are not relicensed under the project's MIT license.
 
 The exact resolved versions are governed by `uv.lock`. Operators distributing a built wheel or application should retain the corresponding installed package metadata and these notices. Research-only repositories listed in [docs/research.md](docs/research.md) are not dependencies and their code is not copied here; their licenses were not treated as permission to vendor.

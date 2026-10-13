@@ -9,7 +9,7 @@
 - A1, A1 mini, P1P/P1S, X1C/X1E의 단일 plate 출력. AMS 매핑, 최신 상태 확인, pause/resume/stop을 지원합니다.
 - 실험적인 LAN MQTT/FTPS 전송입니다. H2, cloud, FEM, 독점 클라이언트 인증서 추출은 범위 밖입니다.
 
-FreeCAD 1.1.3 내보내기와 Bambu Studio 2.8.2 GUI 슬라이싱·사전 검사를 macOS에서 확인했습니다. **실제 프린터 출력은 아직 검증하지 않았습니다.** 자세한 근거는 [검증 기록](docs/verification.md)에 있습니다.
+FreeCAD 1.1.3 내보내기와 Bambu Studio 2.8.2 GUI 슬라이싱·사전 검사를 macOS에서 확인했습니다. 2026-10-13에는 **공식 Bambu Studio LAN 경로**로 A1에서 양각 명함 한 장의 실제 출력과 동일 작업의 완료를 확인했습니다. 이 패키지의 실험적 MQTT/FTPS 전송은 여전히 offline 검증 범위이며, 작은 글자의 판독·강도는 실물 검증이 필요합니다. 자세한 근거는 [검증 기록](docs/verification.md)에 있습니다.
 
 ## 설치
 
@@ -53,3 +53,9 @@ uv run pytest
 ```
 
 테스트는 offline mock이며 하드웨어나 물리 출력의 증거가 아닙니다. [설치 안내](docs/setup.md), [조사 기록](docs/research.md), [외부 구성요소](THIRD_PARTY.md)를 참고하십시오.
+
+## 양각 명함 예제
+
+[90 × 50 mm 명함 예제](examples/raised-card/README.md)는 FreeCAD의 편집 가능한 글자, 폴더 스케치, 둥근 바닥판을 유지합니다. 글자는 1.8 mm 바닥판에 0.1 mm 겹쳐 결합되고 위로 0.8 mm 올라옵니다. Roboto 글꼴과 Apache-2.0 라이선스, 로컬 MCP wrapper 사용법, 설계·출력 검증 기록을 포함하며 출력 명령을 실행하지 않습니다.
+
+![양각 명함 CAD 미리보기](docs/images/raised-card.png)
