@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from freecad_bambu_mcp.printer import BambuError, BambuLAN, PrinterConfig, _ImplicitFTP_TLS
+from freecad_bambu_mcp.printer import BambuError, BambuLAN, PrinterConfig, _ImplicitFTP_TLS, tls_mode
 
 
 class FakeMQTT:
@@ -48,6 +48,21 @@ def test_unsafe_names(name):
 def test_tls_secure_default():
     f=FakeMQTT(); BambuLAN(cfg(), mqtt_factory=lambda:f).status()
     assert f.context.verify_mode != 0 and f.context.check_hostname
+
+def test_self_signed_with_pinned_ca_still_verifies_the_chain():
+    import ssl, certifi
+    f=FakeMQTT(); BambuLAN(cfg(allow_self_signed=True, tls_ca_file=certifi.where()), mqtt_factory=lambda:f).status()
+    assert f.context.verify_mode == ssl.CERT_REQUIRED and not f.context.check_hostname
+    ftp=BambuLAN(cfg(allow_self_signed=True, tls_ca_file=certifi.where()))._ftp()
+    assert ftp.context.verify_mode == ssl.CERT_REQUIRED
+
+def test_self_signed_without_ca_is_reported_unverified():
+    import ssl
+    f=FakeMQTT(); BambuLAN(cfg(allow_self_signed=True), mqtt_factory=lambda:f).status()
+    assert f.context.verify_mode == ssl.CERT_NONE
+    assert tls_mode(None, False) == "verified"
+    assert tls_mode("bambu-ca.pem", True) == "ca_pinned_no_hostname"
+    assert tls_mode(None, True) == "unverified"
 
 def test_failed_connect_is_sanitized():
     class Bad(FakeMQTT):

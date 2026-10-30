@@ -46,6 +46,10 @@ Install [the portable skill](skills/freecad-bambu/SKILL.md) into your client's s
 
 FreeCAD Python is trusted code and is disabled by default. LAN TLS verification remains enabled; use an operator-owned CA or explicitly configure self-signed trust for a trusted LAN. The package does not change security settings automatically. Keep `config.local.json`, credentials, job state, and sliced files private.
 
+- **Hardware approval.** `start_print`, `control_print` and `close_job` take an authorization flag that the model fills in, so the real gate is your MCP client. Set these three tools to ask every time and never auto-approve them; a web page or file the model reads could otherwise talk it into printing. For a hard boundary, set `"mcp_hardware_control": false`: the MCP server then omits the three tools and printing is possible only through the CLI (`print … --start-authorized`) that you run yourself.
+- **Printer TLS.** Bambu printers present certificates named after the serial, so `allow_self_signed` skips the hostname check. With `tls_ca_file` set to the printer CA the certificate chain is still verified; without it the connection is encrypted but unverified, and anyone on the LAN who can intercept it could read the access code. `doctor` reports each printer as `verified`, `ca_pinned_no_hostname` or `unverified`.
+- **FreeCAD RPC.** The FreeCAD addon's XML-RPC server on `127.0.0.1:9875` has no authentication and accepts Python. Other programs on the same computer can reach it, so start the RPC server only while you use it and stop it afterwards.
+
 ## Development
 
 ```sh

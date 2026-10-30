@@ -57,6 +57,8 @@ class Settings(Strict):
     allow_freecad_python: bool = False
     freecad_port: int = Field(default=9875, ge=1024, le=65535)
     slicer_path: str | None = None
+    # False keeps start/control/close of prints out of the MCP tool list; use the CLI for them.
+    mcp_hardware_control: bool = True
     printers: dict[str, PrinterSettings] = Field(default_factory=dict)
 
 

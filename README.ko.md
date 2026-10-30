@@ -46,6 +46,10 @@ MCP 서버는 같은 엔진을 stdio로 제공합니다. `examples/mcp.json`은 
 
 FreeCAD Python은 신뢰 코드이며 기본 비활성입니다. LAN TLS 검증은 유지됩니다. 운영자 소유 CA를 사용하거나 신뢰하는 LAN에서만 self-signed를 명시 설정하십시오. 패키지가 보안 설정을 자동 변경하지 않습니다.
 
+- **하드웨어 승인.** `start_print`, `control_print`, `close_job`의 승인 값은 모델이 채웁니다. 그래서 실제 관문은 MCP 클라이언트입니다. 이 세 도구는 매번 묻도록 설정하고 자동 승인하지 마십시오. 그렇지 않으면 모델이 읽은 웹 페이지나 파일이 출력을 시키도록 유도할 수 있습니다. 더 확실하게 막으려면 `"mcp_hardware_control": false`로 두십시오. MCP 서버가 세 도구를 아예 내놓지 않고, 출력은 사용자가 직접 실행하는 CLI(`print … --start-authorized`)로만 가능합니다.
+- **프린터 TLS.** Bambu 프린터 인증서에는 LAN 주소가 아니라 시리얼이 들어 있어서 `allow_self_signed`는 호스트 이름 확인을 건너뜁니다. `tls_ca_file`에 프린터 CA를 지정하면 인증서 체인은 계속 검증합니다. 지정하지 않으면 암호화는 되지만 상대를 검증하지 않아, 같은 LAN에서 연결을 가로챌 수 있는 사람이 액세스 코드를 볼 수 있습니다. `doctor`는 프린터마다 `verified`, `ca_pinned_no_hostname`, `unverified` 중 하나를 알려 줍니다.
+- **FreeCAD RPC.** FreeCAD 애드온의 XML-RPC 서버(`127.0.0.1:9875`)는 인증 없이 Python을 받습니다. 같은 컴퓨터의 다른 프로그램도 접근할 수 있으니 쓸 때만 RPC 서버를 켜고 끝나면 끄십시오.
+
 ## 개발
 
 ```sh

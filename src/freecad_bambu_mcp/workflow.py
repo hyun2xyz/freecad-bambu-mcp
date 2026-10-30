@@ -17,7 +17,7 @@ from filelock import FileLock
 from .cad import FreeCADClient
 from .config import BED_NAMES, MODEL_NAMES, Config, JobSpec, read_json
 from .preflight import inspect
-from .printer import BambuLAN
+from .printer import BambuLAN, tls_mode
 from .slicer import find_slicer, slice_model
 
 
@@ -137,6 +137,7 @@ class Workflow:
     def capabilities(self):
         return {"version": "0.1.0", "workspace": str(self.config.workspace),
                 "freecad_rpc": "localhost", "trusted_python": self.config.settings.allow_freecad_python,
+                "mcp_hardware_control": self.config.settings.mcp_hardware_control,
                 "slicer": find_slicer(self.config.settings.slicer_path),
                 "printers": {k: {"model": v.model, "nozzle_mm": v.nozzle_mm, "bed": v.bed}
                              for k, v in self.config.settings.printers.items()},
@@ -149,6 +150,8 @@ class Workflow:
         result["freecad"] = self.cad.status()
         result["printer_credentials"] = {k: all(os.environ.get(name) for name in (v.host_env, v.serial_env, v.access_code_env))
                                          for k, v in self.config.settings.printers.items()}
+        result["printer_tls"] = {k: tls_mode(v.tls_ca_file, v.allow_self_signed)
+                                 for k, v in self.config.settings.printers.items()}
         return result
 
     def cad_execute(self, script):

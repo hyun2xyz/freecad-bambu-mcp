@@ -53,6 +53,23 @@ def _seq() -> str:
     return str((time.time_ns() ^ uuid.uuid4().int) & 0xFFFFFFFF)
 
 
+def tls_context(ca_file: str | None, allow_self_signed: bool) -> ssl.SSLContext:
+    """Printer TLS. Bambu certificates name the serial, not the LAN address, so self-signed mode
+    skips the hostname check; with a pinned CA file the certificate chain is still verified."""
+    context = ssl.create_default_context(cafile=ca_file)
+    if allow_self_signed:
+        context.check_hostname = False
+        if not ca_file:
+            context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def tls_mode(ca_file: str | None, allow_self_signed: bool) -> str:
+    if not allow_self_signed:
+        return "verified"
+    return "ca_pinned_no_hostname" if ca_file else "unverified"
+
+
 def _nested(data: dict[str, Any], *keys: str) -> Any:
     cur: Any = data
     for key in keys:
@@ -113,11 +130,7 @@ class BambuLAN:
         try:
             client.connect_timeout = self.config.timeout
             client.username_pw_set("bblp", self.config.access_code)
-            context = ssl.create_default_context(cafile=self.config.tls_ca_file)
-            if self.config.allow_self_signed:
-                context.check_hostname = False
-                context.verify_mode = ssl.CERT_NONE
-            client.tls_set_context(context)
+            client.tls_set_context(tls_context(self.config.tls_ca_file, self.config.allow_self_signed))
             client.connect(self.config.host, 8883, int(max(1, self.config.timeout)))
             client.loop_start()
             if connected is not None and not connected.wait(self.config.timeout):
@@ -219,10 +232,7 @@ class BambuLAN:
         if self._ftp_factory:
             return self._ftp_factory()
         ftp = _ImplicitFTP_TLS()
-        context = ssl.create_default_context(cafile=self.config.tls_ca_file)
-        if self.config.allow_self_signed:
-            context.check_hostname = False; context.verify_mode = ssl.CERT_NONE
-        ftp.context = context
+        ftp.context = tls_context(self.config.tls_ca_file, self.config.allow_self_signed)
         return ftp
 
     def upload(self, path: Path, remote_name: str) -> dict[str, Any]:

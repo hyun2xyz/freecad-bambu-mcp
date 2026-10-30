@@ -31,3 +31,21 @@ def test_real_mcp_stdio_roundtrip_and_execution_annotations(tmp_path):
                 result = await session.call_tool("start_print", {"job_id": "0" * 20, "sha256": "0" * 64})
                 assert result.isError
     asyncio.run(run())
+
+
+def test_hardware_tools_can_be_kept_out_of_mcp(tmp_path):
+    cfg = tmp_path / "config.json"
+    cfg.write_text(json.dumps({"workspace": str(tmp_path), "mcp_hardware_control": False}), encoding="utf-8")
+
+    async def run():
+        params = StdioServerParameters(command=sys.executable,
+            args=["-m", "freecad_bambu_mcp.cli", "--config", str(cfg), "serve"])
+        async with stdio_client(params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                tools = {t.name for t in (await session.list_tools()).tools}
+                assert len(tools) == 9
+                assert not tools & {"start_print", "control_print", "close_job"}
+                data = json.loads((await session.call_tool("capabilities", {})).content[0].text)
+                assert data["mcp_hardware_control"] is False
+    asyncio.run(run())

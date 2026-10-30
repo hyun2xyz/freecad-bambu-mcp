@@ -44,7 +44,7 @@ export BAMBU_SERIAL=YOUR_SERIAL
 export BAMBU_ACCESS_CODE=YOUR_ACCESS_CODE
 ```
 
-The process does not auto-load `.env`. Do not paste credentials into chat, commit them, or place them in public fixtures. TLS verification is on by default. For a trusted LAN, provide an operator-owned CA or deliberately set the documented self-signed option; the tool does not make that choice for you.
+The process does not auto-load `.env`. Do not paste credentials into chat, commit them, or place them in public fixtures. TLS verification is on by default. For a trusted LAN, provide an operator-owned CA or deliberately set the documented self-signed option; the tool does not make that choice for you. Prefer `allow_self_signed` together with `tls_ca_file`: the hostname check is skipped (the certificate names the serial) but the chain is still verified. Set `"mcp_hardware_control": false` to keep print start/control out of the MCP tools and use the CLI for them.
 
 ## 4. FreeCAD → Bambu workflow
 
